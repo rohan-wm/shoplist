@@ -42,6 +42,18 @@ class ListsController < ApplicationController
     redirect_to lists_path, notice: "List was successfully deleted."
   end
 
+  def add_friend
+    @list = List.find(params[:id])
+    user = User.find_by(email: params[:email])
+
+    if user && !@list.users.include?(user)
+      @list.users << user
+      redirect_to @list, notice: "#{user.email} was added to the list."
+    else
+      redirect_to @list, alert: "User not found or already in the list."
+    end
+  end
+
   private
 
   def set_list
