@@ -2,9 +2,42 @@
 <h2>Items:</h2>
 <ul>
   <% @items.each do |item| %>
-    <li><%= item.name %> - Quantity: <%= item.quantity %></li>
-  <% end %>
+  <li>
+      <%= item.name %> - Quantity: <%= item.quantity %>
+          <%= button_to (item.checked ? 'Uncheck' : 'Check'),
+                  toggle_checked_list_item_path(@list, item),
+                  method: :patch,
+                  class: "text-green-500 hover:text-green-700" %>
+      <%= button_to 'Delete',
+                    list_item_path(@list, item),
+                    method: :delete,
+                    class: "text-red-500 hover:text-red-700",
+                    form: { data: { turbo_confirm: "Are you sure you want to delete this item?" } } %>
+  </li>
+<% end %>
 </ul>
 
-<%= link_to 'Edit', edit_list_path(@list) %>
+<h3>Add New Item</h3>
+<%= form_with(model: [ @list, Item.new ], local: true) do |form| %>
+  <div class="field">
+    <%= form.label :name %>
+    <%= form.text_field :name %>
+  </div>
+  <div class="field">
+    <%= form.label :quantity %>
+    <%= form.number_field :quantity %>
+  </div>
+  <div class="actions">
+    <%= form.submit "Add Item" %>
+  </div>
+<% end %>
+
+<%= link_to 'Edit List', edit_list_path(@list) %>
 <%= link_to 'Back to Lists', lists_path %>
+
+<h3>Add a Friend to This List</h3>
+<%= form_with url: add_friend_list_path(@list), method: :post, local: true do |form| %>
+  <%= form.label :email, "Friend's Email" %>
+  <%= form.email_field :email, required: true %>
+  <%= form.submit "Add Friend" %>
+<% end %>
